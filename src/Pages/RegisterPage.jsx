@@ -3,10 +3,12 @@ import styled from 'styled-components';
 import Web3 from 'web3';
 import json from '../ChatApp.json';
 import { useNavigate } from 'react-router-dom';
+import Loader from '../Components/Loader/Loader';
 
 const RegisterPage = ({ contract, user }) => {
   const [name, setName] = useState('');
   const navigate = useNavigate();
+  const [loader,setLoader] = useState(false)
 
   useEffect(() => {
     if (localStorage.getItem('web3-chat')) {
@@ -15,6 +17,7 @@ const RegisterPage = ({ contract, user }) => {
   }, [navigate]);
 
   const handleRegister = async (e) => {
+    setLoader(true)
     e.preventDefault();
     try {
         console.log(user)
@@ -22,9 +25,11 @@ const RegisterPage = ({ contract, user }) => {
       const contractInstance = new web3.eth.Contract(json.abi, contract);
       await contractInstance.methods.createAccount(name).send({ from: user });
       localStorage.setItem('web3-chat', JSON.stringify({ address: user }));
+      setLoader(false)
       alert('Account Registered Successfully!!');
       navigate('/chat');
     } catch (error) {
+      setLoader(false)
       if (error.code === 4001) {
         alert('Transaction denied Successfully');
       } else {
@@ -35,29 +40,31 @@ const RegisterPage = ({ contract, user }) => {
 
   return (
     <Container>
-      <div className="container">
-        <h1>Register Your Account</h1>
-        <p>Enter your username to get Registered.</p>
-        <form className="register-form" onSubmit={handleRegister}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            id="wallet-address"
-            placeholder="Enter your userName"
-            required
-          />
-          <button className="cta-btn" type="submit">
-            Register
-          </button>
-        </form>
-        <div className="info-text">
-          <p>
-            By registering, you agree to our <a href="#">Terms of Service</a> and{' '}
-            <a href="#">Privacy Policy</a>.
-          </p>
+      {loader?(<Loader/>):(
+        <div className="container">
+          <h1>Register Your Account</h1>
+          <p>Enter your username to get Registered.</p>
+          <form className="register-form" onSubmit={handleRegister}>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              id="wallet-address"
+              placeholder="Enter your userName"
+              required
+            />
+            <button className="cta-btn" type="submit">
+              Register
+            </button>
+          </form>
+          <div className="info-text">
+            <p>
+              By registering, you agree to our <a href="#">Terms of Service</a> and{' '}
+              <a href="#">Privacy Policy</a>.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </Container>
   );
 };
