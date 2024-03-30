@@ -141,9 +141,9 @@ const Container = styled.div`
         .recieved{
             justify-content: flex-start;
             p{
-                background-color: orange;
-                color: #020202;
-                border: 1px solid  #2d2b2b;
+                background-color: #2d2b2b;
+                color: orange;
+                border: 1px solid orange;
             }
         }
     }
